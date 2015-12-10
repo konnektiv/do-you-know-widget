@@ -9,12 +9,6 @@ class BP_Members_With_Avatar_Helper {
     private  static $instance;
 
     private function __construct() {
-		//record on new avatar upload
-		add_action( 'xprofile_avatar_uploaded', array( $this, 'log_uploaded' ) );
-		//on avatar delete
-		add_action( 'bp_core_delete_existing_avatar', array( $this, 'log_deleted' ) );
-		//show entry
-		add_action( 'bp_members_with_uploaded_avatar_entry', array( $this, 'member_entry' ), 10, 2 );//remove this function from the action and use your own to customize the entry
     }
     /**
      * Get the singleton object
@@ -28,55 +22,74 @@ class BP_Members_With_Avatar_Helper {
         return self::$instance;
     }
 
-    //on new avatar upload, record it to user meta
-    public function log_uploaded($user_id) {
+	public function filter_default_gravatar($default_grav) {
+		return 404;
+	}
 
-		error_log("User avatar added:" . $user_id);
-        bp_update_user_meta( $user_id, 'has_avatar', 1 );
-    }
-
-    //on delete avatar, delete it from user meta
-    public function log_deleted( $args ) {
-
-        if( $args['object'] != 'user' )
-			return;
-        //we are sure it was user avatar delete
-
-        //remove the log from user meta
-        bp_delete_user_meta( $args['item_id'], 'has_avatar' );
-    }
-
-	public function setRandomQueryOrder(&$query) {
-	   if($query->query_vars["orderby"] == 'random') {
-		   $query->query_orderby = 'ORDER by RAND()';
-	   }
+	public function filter_default_avatar($default_avatar) {
+		return false;
 	}
 
     /**
      *
-     * @param type $type
-     * @return type Return an array of Users object with the specifie
+     * @param type $exclude
+     * @return type return a random user object which has an attached avatar
      */
-    public function get_users_with_avatar( $max, $orderby = 'random', $exclude = null ) {
+    public function get_random_user_with_avatar( $exclude = null ) {
 
-		add_filter('pre_user_query', array($this, setRandomQueryOrder));
+		if ($exclude)
+			$exclude = array($exclude);
 
         //Find all users with uploaded avatar
 
 		$qusers = new WP_User_Query( array(
-				'orderby'	=> $orderby,
-				'number'	=> $max,
+				'fields'	=> array('ID', 'user_email'),
 				'exclude'	=> $exclude,
-				'meta_key'	=> 'has_avatar',
 			)
 		);
 
-		remove_filter('pre_user_query', array($this, setRandomQueryOrder));
-
 		$users = array_values( $qusers->results );
+		$user = null;
 
-        return $users;
+		add_filter('bp_core_mysteryman_src', array($this, 'filter_default_gravatar'));
+		add_filter('bp_core_default_avatar_user', array($this, 'filter_default_avatar'));
 
+		while (!empty($users)) {
+			// grab random user
+			$index = rand(0, count($users)-1);
+			$user = $users[$index];
+			array_splice($users, $index, 1);
+			$avatar = null;
+
+			// first try w/o gravatar
+			foreach(array(true, false) as $no_grav){
+				$avatar = bp_core_fetch_avatar(array(
+					'item_id'	=> $user->ID,
+					'object'	=> 'user',
+					'email'		=> $user->user_email,
+					'html'		=> false,
+					'no_grav'	=> $no_grav,
+				));
+
+				if ($avatar && $no_grav) break;
+				$avatar = html_entity_decode($avatar);
+
+				// check if gravatar exists
+				if (!$no_grav) {
+					$headers = get_headers((is_ssl()?'https:':'http:') . $avatar);
+					if (substr($headers[0], 9, 3) === "404")
+						$avatar = null;
+				}
+			}
+
+			if ($avatar)
+				break;
+		}
+
+		remove_filter('bp_core_mysteryman_src', array($this, 'filter_default_gravatar'));
+		remove_filter('bp_core_default_avatar_user', array($this, 'filter_default_avatar'));
+
+        return $user;
     }
 
     public function member_entry( $user, $args ) {

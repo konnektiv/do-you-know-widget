@@ -15,7 +15,7 @@ class DoYouKnow_widget extends WP_Widget {
         extract( $args );
         $title 		= apply_filters('widget_title', $instance['title']);
         $text 		= $instance['text'];
-		$users 		= BP_Members_With_Avatar_Helper::get_instance()->get_users_with_avatar(1, 'random', array(get_current_user_id()));
+		$user 		= BP_Members_With_Avatar_Helper::get_instance()->get_random_user_with_avatar(get_current_user_id());
 
         ?>
               <?php echo $before_widget; ?>
@@ -25,8 +25,8 @@ class DoYouKnow_widget extends WP_Widget {
 				 <?php 	if ( $text ) ?>
 							<p><?php echo $text; ?></p>
 
-				 <?php 	if ( !empty($users ) )
-							echo get_avatar( $users[0]->ID ); ?>
+				 <?php 	if ( $user )
+							echo get_avatar( $user->ID ); ?>
               <?php echo $after_widget; ?>
         <?php
     }
