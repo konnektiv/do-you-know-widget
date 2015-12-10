@@ -10,9 +10,8 @@ class DoYouKnow_widget extends WP_Widget {
         parent::WP_Widget(false, $name = 'Do You Know Widget');
     }
 
-	function get_random_user($seconds) {
-		// check if this is a new game
-		$current_user = get_user_meta(get_current_user_id(), '_dyk_current_user', true);
+	function get_game($seconds) {
+		$num_choices = 3;
 		$game_start = get_user_meta(get_current_user_id(), '_dyk_game_start', true);
 
 		// start new game when its time
@@ -20,38 +19,72 @@ class DoYouKnow_widget extends WP_Widget {
 			$game_start = time();
 			$current_user = null;
 			update_user_meta(get_current_user_id(), '_dyk_game_start', $game_start);
-		}
 
-		if (!$current_user) {
+			// set current user
 			$current_user = BP_Members_With_Avatar_Helper::get_instance()->get_random_user_with_avatar(get_current_user_id());
 
-			if ($current_user) {
-				$current_user = $current_user->ID;
-				update_user_meta(get_current_user_id(), '_dyk_current_user', $current_user);
-			}
+			if (!$current_user) return false;
+
+
+			$current_user = $current_user->ID;
+			update_user_meta(get_current_user_id(), '_dyk_current_user', $current_user);
+
+			// set answers
+			$answers = BP_Members_With_Avatar_Helper::get_instance()->get_random_users($num_choices - 1, array(get_current_user_id(), $current_user));
+
+			// set random correct position
+			if (count($answers) < ($num_choices - 1))
+				return false;
+
+			$correct = rand(0, $num_choices - 1);
+			array_splice($answers, $correct, 0, $current_user);
+
+			update_user_meta(get_current_user_id(), '_dyk_current_answers', $answers);
 		}
 
-		return $current_user;
+		$current_user 	= get_user_meta(get_current_user_id(), '_dyk_current_user', true);
+		$answers 		= get_user_meta(get_current_user_id(), '_dyk_current_answers', true);
+
+		return array(
+			'user' 		=> $current_user,
+			'answers'	=> $answers,
+		);
 	}
+
 
     /** @see WP_Widget::widget -- do not rename this */
     function widget($args, $instance) {
         extract( $args );
         $title 		= apply_filters('widget_title', $instance['title']);
         $text 		= $instance['text'];
-		$user 		= $this->get_random_user($instance['seconds']);
+		$game 		= $this->get_game($instance['seconds']);
+
+		if (!$game) {
+			echo $before_widget . $after_widget;
+			return;
+		}
 
         ?>
-              <?php echo $before_widget; ?>
-                  <?php if ( $title )
-                        	echo $before_title . $title . $after_title; ?>
+			<?php echo $before_widget; ?>
+			<?php if ( $title )
+				echo $before_title . $title . $after_title; ?>
 
-				 <?php 	if ( $text ) ?>
-							<p><?php echo $text; ?></p>
+			<?php echo get_avatar( $game['user'] ); ?>
 
-				 <?php 	if ( $user )
-							echo get_avatar( $user ); ?>
-              <?php echo $after_widget; ?>
+			<?php 	if ( $text ) ?>
+				<p><?php echo $text; ?></p>
+
+			<form method="post">
+				<fieldset>
+				<?php foreach($game['answers'] as $key => $user_id){  ?>
+					<input type="radio" id="answer<?php echo $key; ?>" name="_dyk_answer" value="<?php echo $key; ?>" required>
+					<label for="answer<?php echo $key; ?>"><?php echo get_the_author_meta( 'display_name', $user_id ); ?></label><br>
+				<?php } ?>
+				</fieldset>
+				<input type="submit" value="Submit">
+			</form>
+
+			<?php echo $after_widget; ?>
         <?php
     }
 

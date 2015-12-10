@@ -30,6 +30,12 @@ class BP_Members_With_Avatar_Helper {
 		return false;
 	}
 
+	public function setRandomQueryOrder(&$query) {
+		if($query->query_vars["orderby"] == 'random') {
+			$query->query_orderby = 'ORDER by RAND()';
+		}
+	}
+
     /**
      *
      * @param type $exclude
@@ -48,7 +54,7 @@ class BP_Members_With_Avatar_Helper {
 			)
 		);
 
-		$users = array_values( $qusers->results );
+		$users = $qusers->get_results();
 		$user = null;
 
 		add_filter('bp_core_mysteryman_src', array($this, 'filter_default_gravatar'));
@@ -92,25 +98,22 @@ class BP_Members_With_Avatar_Helper {
         return $user;
     }
 
-    public function member_entry( $user, $args ) {
+   	 public function get_random_users( $max, $exclude = null ) {
 
-        extract( $args );
-        ?>
+		add_filter('pre_user_query', array($this, setRandomQueryOrder));
 
-		<a href="<?php echo bp_core_get_user_domain( $user->id ) ?>">
-		   <?php echo bp_core_fetch_avatar( array(
-					   'type'		=> $size,
-					   'width'		=> $width,
-					   'height'	=> $height,
-					   'item_id'	=> $user->id
-				   )
-			   ) ?>
-		</a>
+		$qusers = new WP_User_Query( array(
+				'orderby'	=> 'random',
+				'number'	=> $max,
+				'fields'	=> 'ID',
+				'exclude'	=> $exclude,
+			)
+		);
 
+		remove_filter('pre_user_query', array($this, setRandomQueryOrder));
 
-    <?php
-
-	}
+		return $qusers->get_results();
+	 }
 
 }
 
