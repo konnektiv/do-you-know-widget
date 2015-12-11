@@ -7,7 +7,14 @@ class DoYouKnow_widget extends WP_Widget {
     /** constructor -- name this the same as the class above */
     function DoYouKnow_widget() {
         parent::WP_Widget(false, $name = 'Do You Know Widget');
+
+		add_filter('badgeos_activity_triggers', array($this, 'badgeos_triggers'));
     }
+
+	function badgeos_triggers($triggers) {
+		$triggers['dyk_correct_answer'] = __('Correctly play the "Do you know?" game', 'do-you-know-widget');
+		return $triggers;
+	}
 
 	function get_game($seconds) {
 		$num_choices = 3;
@@ -22,10 +29,12 @@ class DoYouKnow_widget extends WP_Widget {
 			$result = (bool)$result;
 
 		// answer was submitted
-		if ( 'POST' === $_SERVER['REQUEST_METHOD'] and isset ( $_POST['_dyk_answer'] )) {
+		if ( 'POST' === $_SERVER['REQUEST_METHOD'] and isset ( $_POST['_dyk_answer'] ) && is_null($result)) {
 			$result = ($answers[$_POST['_dyk_answer']] == $current_user)?'1':'0';
 			add_user_meta(get_current_user_id(), '_dyk_current_result', $result, true);
 			$result = (bool)$result;
+			if ($result)
+				do_action('dyk_correct_answer');
 		}
 		// start new game when its time
 		else if (!$game_start || (time() - $game_start ) > $seconds ) {
