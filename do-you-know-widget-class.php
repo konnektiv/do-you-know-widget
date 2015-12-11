@@ -113,9 +113,11 @@ class DoYouKnow_widget extends WP_Widget {
 			<?php echo get_avatar( $game['user'] ); ?>
 			<?php if ( $has_result ) { ?>
 				</a>
-				<?php if ( $game['next'] > 0 ) { ?>
-				<p><span class="dyk-next-text">Next game starts in <span class="dyk-next-time"><?php echo $game['next'] ?></span></span></p>
-				<?php } ?>
+				<p>
+					<?php if ( $game['next'] > 0 ) { ?>
+					<span class="dyk-next-text">Next game starts in <span class="dyk-next-time"><?php echo $game['next'] ?></span></span>
+					<?php } ?>
+				</p>
 				<a href="" class="button dyk-next-button" <?php if ( $game['next'] > 0 ) { ?>style="display: none;"<?php } ?>>Play again!</a>
 			<?php } else { ?>
 				<?php if ( $text ) ?>
