@@ -16,8 +16,7 @@ class DoYouKnow_widget extends WP_Widget {
 		return $triggers;
 	}
 
-	function get_game($seconds) {
-		$num_choices = 3;
+	function get_game($seconds, $num_choices) {
 		$game_start 	= get_user_meta(get_current_user_id(), '_dyk_game_start', true);
 		$current_user 	= get_user_meta(get_current_user_id(), '_dyk_current_user', true);
 		$answers 		= get_user_meta(get_current_user_id(), '_dyk_current_answers', true);
@@ -83,9 +82,10 @@ class DoYouKnow_widget extends WP_Widget {
         $title 			= apply_filters('widget_title', $instance['title']);
         $text 			= $instance['text'];
 		$seconds		= $instance['seconds'];
+		$num_choices	= $instance['num_choices'];
 		$correct_msg 	= $instance['correct_msg'];
 		$wrong_msg 		= $instance['wrong_msg'];
-		$game 			= $this->get_game($seconds);
+		$game 			= $this->get_game($seconds, $num_choices);
 
 		if (!$game) {
 			echo $before_widget . $after_widget;
@@ -144,6 +144,7 @@ class DoYouKnow_widget extends WP_Widget {
 		$instance['seconds'] = strip_tags($new_instance['seconds']);
 		$instance['correct_msg'] = strip_tags($new_instance['correct_msg']);
 		$instance['wrong_msg'] = strip_tags($new_instance['wrong_msg']);
+		$instance['num_choices'] = strip_tags($new_instance['num_choices']);
         return $instance;
     }
 
@@ -154,6 +155,7 @@ class DoYouKnow_widget extends WP_Widget {
 			'title'			=> "Do You Know?",
 			'text'			=> "Do you know this participant? Choose the correct name!",
 			'seconds'		=> 60,
+			'num_choices'	=> 4,
 			'correct_msg' 	=> "Correct! You can click on the image to see the profile of this participant!",
 			'wrong_msg' 	=> "Bummer! You made the wrong choice. You can get to learn this participant by clicking on the image!",
 		));
@@ -163,6 +165,8 @@ class DoYouKnow_widget extends WP_Widget {
 		$seconds		= esc_attr($instance['seconds']);
 		$correct_msg	= esc_attr($instance['correct_msg']);
 		$wrong_msg		= esc_attr($instance['wrong_msg']);
+		$num_choices	= esc_attr($instance['num_choices']);
+
         ?>
          <p>
           <label for="<?php echo $this->get_field_id('title'); ?>"><?php _e('Title:'); ?></label>
@@ -175,6 +179,10 @@ class DoYouKnow_widget extends WP_Widget {
 		<p>
           <label for="<?php echo $this->get_field_id('seconds'); ?>"><?php _e('Seconds per game:'); ?></label>
           <input class="widefat" id="<?php echo $this->get_field_id('seconds'); ?>" name="<?php echo $this->get_field_name('seconds'); ?>" type="number" value="<?php echo $seconds; ?>" />
+        </p>
+		<p>
+          <label for="<?php echo $this->get_field_id('num_choices'); ?>"><?php _e('Number of possible choices:'); ?></label>
+          <input class="widefat" id="<?php echo $this->get_field_id('num_choices'); ?>" name="<?php echo $this->get_field_name('num_choices'); ?>" type="number" value="<?php echo $num_choices; ?>" />
         </p>
 		<p>
           <label for="<?php echo $this->get_field_id('correct_msg'); ?>"><?php _e('Text for correct answer:'); ?></label>
