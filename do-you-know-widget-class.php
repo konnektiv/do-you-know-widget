@@ -60,17 +60,16 @@ class DoYouKnow_widget extends WP_Widget {
 			'user' 		=> $current_user,
 			'answers'	=> $answers,
 			'result'	=> $result,
-			'next'		=> $game_start + $seconds,
+			'next'		=> $seconds - (time() - $game_start),
 		);
-	}
-
-	function pluralize( $count, $text ) {
-		return $count . ( ( $count == 1 ) ? ( " $text" ) : ( " ${text}s" ) );
 	}
 
     /** @see WP_Widget::widget -- do not rename this */
     function widget($args, $instance) {
         extract( $args );
+
+		wp_enqueue_script( 'countdown', plugins_url( 'js/countdown.js', __FILE__ ), array(), '2.6.0', true );
+		wp_enqueue_script( 'dyk-main', plugins_url( 'js/main.js', __FILE__ ), array('countdown', 'jquery'), '0.0.1', true );
 
         $title 			= apply_filters('widget_title', $instance['title']);
         $text 			= $instance['text'];
@@ -85,20 +84,6 @@ class DoYouKnow_widget extends WP_Widget {
 		}
 
 		$has_result = is_bool($game['result']);
-		$now = new DateTime();
-		$next = new DateTime();
-		$next->setTimestamp($game['next']);
-		$diff = $now->diff($next);
-
-		$time = '';
-
-		if ( $diff->h >= 1 )
-			$time .= $this->pluralize( $diff->h, 'hour' ) . ', ';
-
-		if ( $diff->i >= 1 )
-			$time .= $this->pluralize( $diff->i, 'minute' ) . ' and ';
-
-		$time .= $this->pluralize( $diff->s, 'second' );
 
         ?>
 			<?php echo $before_widget; ?>
@@ -119,7 +104,10 @@ class DoYouKnow_widget extends WP_Widget {
 			<?php echo get_avatar( $game['user'] ); ?>
 			<?php if ( $has_result ) { ?>
 				</a>
-				<p>Next game starts in <?php echo $time ?></p>
+				<?php if ( $game['next'] > 0 ) { ?>
+				<p><span class="dyk-next-text">Next game starts in <span class="dyk-next-time"><?php echo $game['next'] ?></span></span></p>
+				<?php } ?>
+				<a href="" class="button dyk-next-button" <?php if ( $game['next'] > 0 ) { ?>style="display: none;"<?php } ?>>Play again!</a>
 			<?php } else { ?>
 				<?php if ( $text ) ?>
 					<p><?php echo $text; ?></p>
