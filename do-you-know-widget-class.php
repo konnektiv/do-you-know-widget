@@ -13,6 +13,7 @@ class DoYouKnow_widget extends WP_Widget {
 
 	function badgeos_triggers($triggers) {
 		$triggers['dyk_correct_answer'] = __('Correctly play the "Do you know?" game', 'do-you-know-widget');
+		$triggers['dyk_wrong_answer'] = __('Wrong answer in the "Do you know?" game', 'do-you-know-widget');
 		return $triggers;
 	}
 
@@ -34,6 +35,8 @@ class DoYouKnow_widget extends WP_Widget {
 			$result = (bool)$result;
 			if ($result)
 				do_action('dyk_correct_answer');
+			else
+				do_action('dyk_wrong_answer');
 		}
 		// start new game when its time
 		else if (!$game_start || (time() - $game_start ) > $seconds ) {
