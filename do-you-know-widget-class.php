@@ -113,7 +113,7 @@ class DoYouKnow_widget extends WP_Widget {
 			<?php if ( $has_result ) { ?>
 				<a href="<?php echo bp_core_get_user_domain( $game['user'] ) ?>">
 			<?php } ?>
-			<?php echo get_avatar( $game['user'] ); ?>
+			<?php echo get_avatar( $game['user'], 96, null, "Do you know avatar" ); ?>
 			<?php if ( $has_result ) { ?>
 				</a>
 				<p>
