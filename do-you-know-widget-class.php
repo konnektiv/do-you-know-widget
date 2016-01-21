@@ -145,7 +145,7 @@ class DoYouKnow_widget extends WP_Widget {
     function update($new_instance, $old_instance) {
 		$instance = $old_instance;
 		$instance['title'] = strip_tags($new_instance['title']);
-		$instance['text'] = strip_tags($new_instance['text']);
+		$instance['text'] = strip_tags($new_instance['text'], '<br><br/>');
 		$instance['seconds'] = strip_tags($new_instance['seconds']);
 		$instance['correct_msg'] = strip_tags($new_instance['correct_msg']);
 		$instance['wrong_msg'] = strip_tags($new_instance['wrong_msg']);
