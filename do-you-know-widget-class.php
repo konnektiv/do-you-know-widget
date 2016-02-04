@@ -91,7 +91,6 @@ class DoYouKnow_widget extends WP_Widget {
 		$game 			= $this->get_game($seconds, $num_choices);
 
 		if (!$game) {
-			echo $before_widget . $after_widget;
 			return;
 		}
 
@@ -99,9 +98,11 @@ class DoYouKnow_widget extends WP_Widget {
 
         ?>
 			<?php echo $before_widget; ?>
-			<?php if ( $title )
-				echo $before_title . $title . $after_title; ?>
+			<?php if ( !empty($title) ) { ?>
+				<?php echo $before_title . $title . $after_title; ?>
+			<?php } ?>
 
+			<div class="do-you-know-content">
 			<?php if ( $has_result ) { ?>
 				<?php if ( $game['result'] ) { ?>
 					<p><?php echo $correct_msg; ?></p>
@@ -123,8 +124,9 @@ class DoYouKnow_widget extends WP_Widget {
 				</p>
 				<a href="" class="button dyk-next-button" <?php if ( $game['next'] > 0 ) { ?>style="display: none;"<?php } ?>>Play again!</a>
 			<?php } else { ?>
-				<?php if ( $text ) ?>
+				<?php if ( !empty($text) ) { ?>
 					<p><?php echo $text; ?></p>
+				<?php } ?>
 
 				<form method="post">
 					<fieldset>
@@ -136,6 +138,7 @@ class DoYouKnow_widget extends WP_Widget {
 					<input type="submit" value="Submit">
 				</form>
 			<?php } ?>
+			</div>
 
 			<?php echo $after_widget; ?>
         <?php
