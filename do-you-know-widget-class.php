@@ -28,8 +28,13 @@ class DoYouKnow_widget extends WP_Widget {
 		else
 			$result = (bool)$result;
 
+		$action = 'dyk_game_' . $game_start;
+
 		// answer was submitted
 		if ( 'POST' === $_SERVER['REQUEST_METHOD'] and isset ( $_POST['_dyk_answer'] ) && is_null($result)) {
+			if ( !wp_verify_nonce( $_REQUEST['_wpnonce'], $action ) ) {
+				return false;
+			}
 			$result = ($answers[$_POST['_dyk_answer']] == $current_user)?'1':'0';
 			add_user_meta(get_current_user_id(), '_dyk_current_result', $result, true);
 			$result = (bool)$result;
@@ -68,6 +73,7 @@ class DoYouKnow_widget extends WP_Widget {
 		}
 
 		return array(
+			'start'		=> $game_start,
 			'user' 		=> $current_user,
 			'answers'	=> $answers,
 			'result'	=> $result,
@@ -129,6 +135,7 @@ class DoYouKnow_widget extends WP_Widget {
 				<?php } ?>
 
 				<form method="post">
+					<?php wp_nonce_field( 'dyk_game_' . $game['start'] ); ?>
 					<fieldset>
 					<?php foreach($game['answers'] as $key => $user_id){  ?>
 						<input type="radio" id="answer<?php echo $key; ?>" name="_dyk_answer" value="<?php echo $key; ?>" required>
