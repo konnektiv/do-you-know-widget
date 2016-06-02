@@ -1,0 +1,10 @@
+{
+  "name": "konnektiv/do-you-know-widget",
+  "description": "Adds a widget with a user recognition game.",
+  "type": "wordpress-plugin",
+  "license": "AGPL-3.0",
+  "require": {
+    "composer/installers": "~1.0",
+    "php": ">=5.2.4"
+  }
+}
