@@ -36,6 +36,32 @@ class BP_Members_With_Avatar_Helper {
 		}
 	}
 
+	private function get_avatar_url($user, $no_grav) {
+		if ( function_exists('bp_core_fetch_avatar') ) {
+			return bp_core_fetch_avatar(array(
+				'item_id'	=> $user->ID,
+				'object'	=> 'user',
+				'email'		=> $user->user_email,
+				'html'		=> false,
+				'no_grav'	=> $no_grav,
+			));
+		}
+
+		$url = false;
+		$img = get_avatar($user->ID, null, '404', null, array (
+			'default' => '404'
+		));
+
+		preg_match('/src="(.*?)"/i', $img, $matches);
+
+		if (!empty($matches))
+		$url = $matches[1];
+
+		if (strpos($url, 'gravatar.com') !== FALSE && $no_grav)
+			$url = false;
+
+		return $url;
+	}
     /**
      *
      * @param type $exclude
@@ -69,20 +95,17 @@ class BP_Members_With_Avatar_Helper {
 
 			// first try w/o gravatar
 			foreach(array(true, false) as $no_grav){
-				$avatar = bp_core_fetch_avatar(array(
-					'item_id'	=> $user->ID,
-					'object'	=> 'user',
-					'email'		=> $user->user_email,
-					'html'		=> false,
-					'no_grav'	=> $no_grav,
-				));
+				$avatar = $this->get_avatar_url($user, $no_grav);
 
 				if ($avatar && $no_grav) break;
 				$avatar = html_entity_decode($avatar);
 
 				// check if gravatar exists
 				if (!$no_grav) {
-					$headers = get_headers((is_ssl()?'https:':'http:') . $avatar);
+					if( strpos($avatar, 'http') !== 0 )
+						$avatar = ( is_ssl()?'https:':'http:' ) . $avatar;
+
+					$headers = get_headers( $avatar );
 					if (substr($headers[0], 9, 3) === "404")
 						$avatar = null;
 				}
