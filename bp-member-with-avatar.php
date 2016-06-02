@@ -37,16 +37,6 @@ class BP_Members_With_Avatar_Helper {
 	}
 
 	private function get_avatar_url($user, $no_grav) {
-		if ( function_exists('bp_core_fetch_avatar') ) {
-			return bp_core_fetch_avatar(array(
-				'item_id'	=> $user->ID,
-				'object'	=> 'user',
-				'email'		=> $user->user_email,
-				'html'		=> false,
-				'no_grav'	=> $no_grav,
-			));
-		}
-
 		$url = false;
 		$img = get_avatar($user->ID, null, '404', null, array (
 			'default' => '404'
