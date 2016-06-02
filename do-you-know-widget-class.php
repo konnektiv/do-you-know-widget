@@ -85,6 +85,13 @@ class DoYouKnow_widget extends WP_Widget {
 		);
 	}
 
+	function get_user_url( $user ) {
+		if (function_exists('bp_core_get_user_domain'))
+			return bp_core_get_user_domain( $user );
+
+		return get_author_posts_url( $user );
+	}
+
     /** @see WP_Widget::widget -- do not rename this */
     function widget($args, $instance) {
         extract( $args );
@@ -128,7 +135,7 @@ class DoYouKnow_widget extends WP_Widget {
 			<?php } ?>
 
 			<?php if ( $has_result ) { ?>
-				<a href="<?php echo bp_core_get_user_domain( $game['user'] ) ?>">
+				<a href="<?php echo $this->get_user_url( $game['user'] ) ?>">
 			<?php } ?>
 			<?php echo get_avatar( $game['user'], 96, null, "Do you know avatar" ); ?>
 			<?php if ( $has_result ) { ?>
