@@ -8,7 +8,9 @@ class DoYouKnow_widget extends WP_Widget {
 	 * Register widget with WordPress.
 	 */
     function __construct() {
-        parent::__construct(false, $name = 'Do You Know Widget');
+        parent::__construct(false,
+							__( 'Do You Know Widget', 'do-you-know-widget' ),
+						   array( 'description' => __( 'A widget with a user recognition game.', 'do-you-know-widget' ) ) );
 
 		add_filter('badgeos_activity_triggers', array($this, 'badgeos_triggers'));
     }
