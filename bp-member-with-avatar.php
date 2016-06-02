@@ -100,7 +100,7 @@ class BP_Members_With_Avatar_Helper {
 
    	 public function get_random_users( $max, $exclude = null ) {
 
-		add_filter('pre_user_query', array($this, setRandomQueryOrder));
+		add_filter( 'pre_user_query', array($this, 'setRandomQueryOrder' ) );
 
 		$qusers = new WP_User_Query( array(
 				'orderby'	=> 'random',
@@ -110,7 +110,7 @@ class BP_Members_With_Avatar_Helper {
 			)
 		);
 
-		remove_filter('pre_user_query', array($this, setRandomQueryOrder));
+		remove_filter( 'pre_user_query', array($this, 'setRandomQueryOrder' ) );
 
 		return $qusers->get_results();
 	 }
