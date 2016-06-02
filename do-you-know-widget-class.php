@@ -37,7 +37,7 @@ class DoYouKnow_widget extends WP_Widget {
 		// answer was submitted
 		if ( 'POST' === $_SERVER['REQUEST_METHOD'] and isset ( $_POST['_dyk_answer'] ) && is_null($result)) {
 			if ( !wp_verify_nonce( $_REQUEST['_wpnonce'], $action ) ) {
-				return false;
+				return new WP_Error('access-denied', "Cheat'n, uh?");
 			}
 			$result = ($answers[$_POST['_dyk_answer']] == $current_user)?'1':'0';
 			add_user_meta(get_current_user_id(), '_dyk_current_result', $result, true);
@@ -51,28 +51,28 @@ class DoYouKnow_widget extends WP_Widget {
 		else if (!$game_start || (time() - $game_start ) > $seconds ) {
 			$game_start = time();
 			$current_user = null;
-			update_user_meta(get_current_user_id(), '_dyk_game_start', $game_start);
 			$result = null;
-			delete_user_meta(get_current_user_id(), '_dyk_current_result');
 
 			// set current user
 			$current_user = BP_Members_With_Avatar_Helper::get_instance()->get_random_user_with_avatar(get_current_user_id());
 
-			if (!$current_user) return false;
+			if (!$current_user) return new WP_Error('no-avatar', 'No user with an avatar could be found! You need at least one user with an avatar.');
 
 			$current_user = $current_user->ID;
-			update_user_meta(get_current_user_id(), '_dyk_current_user', $current_user);
 
 			// set answers
 			$answers = BP_Members_With_Avatar_Helper::get_instance()->get_random_users($num_choices - 1, array(get_current_user_id(), $current_user));
 
 			// set random correct position
 			if (count($answers) < ($num_choices - 1))
-				return false;
+				return new WP_Error('not-enough-users', "Not enough users to play the game! You need at least $num_choices users.");
 
 			$correct = rand(0, $num_choices - 1);
 			array_splice($answers, $correct, 0, $current_user);
 
+			update_user_meta(get_current_user_id(), '_dyk_game_start', $game_start);
+			delete_user_meta(get_current_user_id(), '_dyk_current_result');
+			update_user_meta(get_current_user_id(), '_dyk_current_user', $current_user);
 			update_user_meta(get_current_user_id(), '_dyk_current_answers', $answers);
 		}
 
@@ -99,17 +99,23 @@ class DoYouKnow_widget extends WP_Widget {
 		$correct_msg 	= $instance['correct_msg'];
 		$wrong_msg 		= $instance['wrong_msg'];
 		$game 			= $this->get_game($seconds, $num_choices);
+		$error_msg		= false;
+		$has_result		= false;
 
-		if (!$game) {
-			return;
+		if ( is_wp_error($game) ) {
+			$error_msg = $game->get_error_message();
+		} else {
+			$has_result = is_bool($game['result']);
 		}
-
-		$has_result = is_bool($game['result']);
 
         ?>
 			<?php echo $before_widget; ?>
 			<?php if ( !empty($title) ) { ?>
 				<?php echo $before_title . $title . $after_title; ?>
+			<?php } ?>
+
+			<?php if ( $error_msg ) { ?>
+				<?php echo $error_msg; return; ?>
 			<?php } ?>
 
 			<div class="do-you-know-content">
