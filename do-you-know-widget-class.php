@@ -4,9 +4,11 @@
  */
 class DoYouKnow_widget extends WP_Widget {
 
-    /** constructor -- name this the same as the class above */
-    function DoYouKnow_widget() {
-        parent::WP_Widget(false, $name = 'Do You Know Widget');
+    /**
+	 * Register widget with WordPress.
+	 */
+    function __construct() {
+        parent::__construct(false, $name = 'Do You Know Widget');
 
 		add_filter('badgeos_activity_triggers', array($this, 'badgeos_triggers'));
     }
