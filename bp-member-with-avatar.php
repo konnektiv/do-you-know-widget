@@ -1,6 +1,6 @@
 <?php
 /**
- * Helper class for keeping record of avatar change & providing list of the users
+ * Helper class for getting users with or without avatars
  * It is implemented as a singleton class
  */
 
