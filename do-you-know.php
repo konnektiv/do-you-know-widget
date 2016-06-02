@@ -1,8 +1,8 @@
 <?php
 /**
- * Plugin Name: Do You Know
+ * Plugin Name: Do You Know Widget
  * Plugin URI: http://lab.konnektiv.de/giz/wp-plugins/do-you-know-widget
- * Description: Provides the do you know widget.
+ * Description: Adds a widget with a user recognition game.
  * Version: 0.0.1
  * Author: Konnektiv
  * Author URI: http://konnektiv.de/
