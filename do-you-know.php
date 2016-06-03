@@ -16,6 +16,8 @@ if ( !defined( 'ABSPATH' ) ) exit;
 class DoYouKnowPlugin {
 
 	/**
+	 *
+	 *
 	 * @var DoYouKnowPlugin
 	 */
 	private static $instance;
@@ -71,8 +73,8 @@ class DoYouKnowPlugin {
 	 * @access private
 	 */
 	private function includes() {
-		require_once( 'do-you-know-widget-class.php' );
-		require_once( 'bp-member-with-avatar.php' );
+		require_once 'do-you-know-widget-class.php';
+		require_once 'bp-member-with-avatar.php';
 	}
 
 	/**
@@ -98,7 +100,7 @@ class DoYouKnowPlugin {
 	 * @uses add_action() To add various actions
 	 */
 	private function setup_actions() {
-		add_action('widgets_init', create_function('', 'return register_widget("DoYouKnow_widget");'));
+		add_action( 'widgets_init', create_function( '', 'return register_widget("DoYouKnow_widget");' ) );
 	}
 }
 
