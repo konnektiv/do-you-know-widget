@@ -42,7 +42,7 @@ class BP_Members_With_Avatar_Helper {
 			'default' => '404'
 		));
 
-		preg_match('/src="(.*?)"/i', $img, $matches);
+		preg_match('/src=[\'"](.*?)[\'"]/i', $img, $matches);
 
 		if (!empty($matches))
 		$url = $matches[1];
