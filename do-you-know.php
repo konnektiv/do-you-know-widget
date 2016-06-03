@@ -1,12 +1,13 @@
 <?php
 /**
  * Plugin Name: Do You Know Widget
- * Plugin URI: http://lab.konnektiv.de/giz/wp-plugins/do-you-know-widget
+ * Plugin URI: https://wordpress.org/plugins/do-you-know-widget/
  * Description: Adds a widget with a user recognition game.
  * Version: 1.0.0
  * Author: Konnektiv
  * Author URI: http://konnektiv.de/
- * License: GPLv2 (license.txt)
+ * License: GNU AGPL (licence.txt)
+ * Text Domain: do-you-know-widget
  */
 
 // Exit if accessed directly
@@ -60,7 +61,7 @@ class DoYouKnowPlugin {
 	 *
 	 */
 	private function setup_globals() {
-
+		load_plugin_textdomain( 'do-you-know-widget', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
 	}
 
 	/**
