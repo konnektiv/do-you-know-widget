@@ -11,7 +11,9 @@
  */
 
 // Exit if accessed directly
-if ( !defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 class DoYouKnowPlugin {
 
@@ -32,7 +34,7 @@ class DoYouKnowPlugin {
 	 *
 	 * @return DoYouKnowPlugin
 	 */
-	public static function instance( ) {
+	public static function instance() {
 		if ( ! isset( self::$instance ) ) {
 			self::$instance = new DoYouKnowPlugin;
 			self::$instance->setup_globals();
@@ -98,7 +100,7 @@ class DoYouKnowPlugin {
 	 * @uses add_action() To add various actions
 	 */
 	private function setup_actions() {
-		add_action('widgets_init', create_function('', 'return register_widget("DoYouKnow_widget");'));
+		add_action( 'widgets_init', create_function( '', 'return register_widget("DoYouKnow_widget");' ) );
 	}
 }
 

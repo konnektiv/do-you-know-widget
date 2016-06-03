@@ -1,132 +1,144 @@
 <?php
+
 /**
  * Helper class for getting users with or without avatars
  * It is implemented as a singleton class
  */
-
 class BP_Members_With_Avatar_Helper {
 
-    private  static $instance;
+	private static $instance;
 
-    private function __construct() {
-    }
-    /**
-     * Get the singleton object
-     * @return BP_Members_With_Avatar_Helper object
-     */
-    public static function get_instance(){
+	private function __construct() {
+	}
 
-        if( ! isset( self::$instance ) )
-            self::$instance = new self();
+	/**
+	 * Get the singleton object
+	 * @return BP_Members_With_Avatar_Helper object
+	 */
+	public static function get_instance() {
 
-        return self::$instance;
-    }
+		if ( ! isset( self::$instance ) ) {
+			self::$instance = new self();
+		}
 
-	public function filter_default_gravatar($default_grav) {
+		return self::$instance;
+	}
+
+	public function filter_default_gravatar( $default_grav ) {
 		return 404;
 	}
 
-	public function filter_default_avatar($default_avatar) {
+	public function filter_default_avatar( $default_avatar ) {
 		return false;
 	}
 
-	public function setRandomQueryOrder(&$query) {
-		if($query->query_vars["orderby"] == 'random') {
+	public function setRandomQueryOrder( &$query ) {
+		if ( $query->query_vars["orderby"] == 'random' ) {
 			$query->query_orderby = 'ORDER by RAND()';
 		}
 	}
 
-	private function get_avatar_url($user, $no_grav) {
+	private function get_avatar_url( $user, $no_grav ) {
 		$url = false;
-		$img = get_avatar($user->ID, null, '404', null, array (
+		$img = get_avatar( $user->ID, null, '404', null, array(
 			'default' => '404'
-		));
+		) );
 
-		preg_match('/src=[\'"](.*?)[\'"]/i', $img, $matches);
+		preg_match( '/src=[\'"](.*?)[\'"]/i', $img, $matches );
 
-		if (!empty($matches))
-		$url = $matches[1];
+		if ( ! empty( $matches ) ) {
+			$url = $matches[1];
+		}
 
-		if (strpos($url, 'gravatar.com') !== FALSE && $no_grav)
+		if ( strpos( $url, 'gravatar.com' ) !== false && $no_grav ) {
 			$url = false;
+		}
 
 		return $url;
 	}
-    /**
-     *
-     * @param type $exclude
-     * @return type return a random user object which has an attached avatar
-     */
-    public function get_random_user_with_avatar( $exclude = null ) {
 
-		if ($exclude)
-			$exclude = array($exclude);
+	/**
+	 *
+	 * @param array $exclude
+	 *
+	 * @return WP_User return a random user object which has an attached avatar
+	 */
+	public function get_random_user_with_avatar( $exclude = null ) {
 
-        //Find all users with uploaded avatar
+		if ( $exclude ) {
+			$exclude = array( $exclude );
+		}
+
+		//Find all users with uploaded avatar
 
 		$qusers = new WP_User_Query( array(
-				'fields'	=> array('ID', 'user_email'),
-				'exclude'	=> $exclude,
+				'fields'  => array( 'ID', 'user_email' ),
+				'exclude' => $exclude,
 			)
 		);
 
 		$users = $qusers->get_results();
-		$user = null;
+		$user  = null;
 
-		add_filter('bp_core_mysteryman_src', array($this, 'filter_default_gravatar'));
-		add_filter('bp_core_default_avatar_user', array($this, 'filter_default_avatar'));
+		add_filter( 'bp_core_mysteryman_src', array( $this, 'filter_default_gravatar' ) );
+		add_filter( 'bp_core_default_avatar_user', array( $this, 'filter_default_avatar' ) );
 
-		while (!empty($users)) {
+		while ( ! empty( $users ) ) {
 			// grab random user
-			$index = rand(0, count($users)-1);
-			$user = $users[$index];
-			array_splice($users, $index, 1);
+			$index = rand( 0, count( $users ) - 1 );
+			$user  = $users[ $index ];
+			array_splice( $users, $index, 1 );
 			$avatar = null;
 
 			// first try w/o gravatar
-			foreach(array(true, false) as $no_grav){
-				$avatar = $this->get_avatar_url($user, $no_grav);
+			foreach ( array( true, false ) as $no_grav ) {
+				$avatar = $this->get_avatar_url( $user, $no_grav );
 
-				if ($avatar && $no_grav) break;
-				$avatar = html_entity_decode($avatar);
+				if ( $avatar && $no_grav ) {
+					break;
+				}
+				$avatar = html_entity_decode( $avatar );
 
 				// check if gravatar exists
-				if (!$no_grav) {
-					if( strpos($avatar, 'http') !== 0 )
-						$avatar = ( is_ssl()?'https:':'http:' ) . $avatar;
+				if ( ! $no_grav ) {
+					if ( strpos( $avatar, 'http' ) !== 0 ) {
+						$avatar = ( is_ssl() ? 'https:' : 'http:' ) . $avatar;
+					}
 
 					$headers = get_headers( $avatar );
-					if (substr($headers[0], 9, 3) === "404")
+					if ( substr( $headers[0], 9, 3 ) === "404" ) {
 						$avatar = null;
+					}
 				}
 			}
 
-			if ($avatar)
+			if ( $avatar ) {
 				break;
+			}
 		}
 
-		remove_filter('bp_core_mysteryman_src', array($this, 'filter_default_gravatar'));
-		remove_filter('bp_core_default_avatar_user', array($this, 'filter_default_avatar'));
+		remove_filter( 'bp_core_mysteryman_src', array( $this, 'filter_default_gravatar' ) );
+		remove_filter( 'bp_core_default_avatar_user', array( $this, 'filter_default_avatar' ) );
 
-        return $user;
-    }
+		return $user;
+	}
 
-   	 public function get_random_users( $max, $exclude = null ) {
+	public function get_random_users( $max, $exclude = null ) {
 
-		add_filter( 'pre_user_query', array($this, 'setRandomQueryOrder' ) );
+		add_filter( 'pre_user_query', array( $this, 'setRandomQueryOrder' ) );
 
 		$qusers = new WP_User_Query( array(
-				'orderby'	=> 'random',
-				'number'	=> $max,
-				'fields'	=> 'ID',
-				'exclude'	=> $exclude,
+				'orderby' => 'random',
+				'number'  => $max,
+				'fields'  => 'ID',
+				'exclude' => $exclude,
 			)
 		);
 
-		remove_filter( 'pre_user_query', array($this, 'setRandomQueryOrder' ) );
+		remove_filter( 'pre_user_query', array( $this, 'setRandomQueryOrder' ) );
 
 		return $qusers->get_results();
-	 }
+	}
 
 }
 
