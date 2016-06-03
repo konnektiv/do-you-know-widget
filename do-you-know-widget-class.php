@@ -22,6 +22,10 @@ class DoYouKnow_widget extends WP_Widget {
 	}
 
 	function get_game($seconds, $num_choices) {
+		
+		if ( ! is_user_logged_in() )
+			return new WP_Error('user-not-logged-in', 'You must be logged in to play the Do You Know game!' );
+		
 		$game_start 	= get_user_meta(get_current_user_id(), '_dyk_game_start', true);
 		$current_user 	= get_user_meta(get_current_user_id(), '_dyk_current_user', true);
 		$answers 		= get_user_meta(get_current_user_id(), '_dyk_current_answers', true);
@@ -56,7 +60,7 @@ class DoYouKnow_widget extends WP_Widget {
 			// set current user
 			$current_user = BP_Members_With_Avatar_Helper::get_instance()->get_random_user_with_avatar(get_current_user_id());
 
-			if (!$current_user) return new WP_Error('no-avatar', 'No user with an avatar could be found! You need at least one user with an avatar.');
+			if (!$current_user) return new WP_Error('no-avatar', 'No other user with an avatar could be found! You need at least one user with an avatar apart from the currently logged in user.');
 
 			$current_user = $current_user->ID;
 
@@ -65,7 +69,7 @@ class DoYouKnow_widget extends WP_Widget {
 
 			// set random correct position
 			if (count($answers) < ($num_choices - 1))
-				return new WP_Error('not-enough-users', "Not enough users to play the game! You need at least $num_choices users.");
+				return new WP_Error('not-enough-users', sprintf( "Not enough users to play the game! You need at least %s users.", $num_choices + 1 ) );
 
 			$correct = rand(0, $num_choices - 1);
 			array_splice($answers, $correct, 0, $current_user);
