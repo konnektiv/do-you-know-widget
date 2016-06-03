@@ -18,6 +18,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 class DoYouKnowPlugin {
 
 	/**
+	 *
+	 *
 	 * @var DoYouKnowPlugin
 	 */
 	private static $instance;
@@ -73,8 +75,8 @@ class DoYouKnowPlugin {
 	 * @access private
 	 */
 	private function includes() {
-		require_once( 'do-you-know-widget-class.php' );
-		require_once( 'bp-member-with-avatar.php' );
+		require_once 'do-you-know-widget-class.php';
+		require_once 'bp-member-with-avatar.php';
 	}
 
 	/**
