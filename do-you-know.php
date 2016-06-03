@@ -3,7 +3,7 @@
  * Plugin Name: Do You Know Widget
  * Plugin URI: http://lab.konnektiv.de/giz/wp-plugins/do-you-know-widget
  * Description: Adds a widget with a user recognition game.
- * Version: 0.0.1
+ * Version: 1.0.0
  * Author: Konnektiv
  * Author URI: http://konnektiv.de/
  * License: GPLv2 (license.txt)
@@ -25,7 +25,7 @@ class DoYouKnowPlugin {
 	 * Insures that only one instance of DoYouKnowPlugin exists in memory at
 	 * any one time. Also prevents needing to define globals all over the place.
 	 *
-	 * @since DoYouKnowPlugin (0.0.1)
+	 * @since DoYouKnowPlugin (1.0.0)
 	 *
 	 * @staticvar array $instance
 	 *
@@ -46,7 +46,7 @@ class DoYouKnowPlugin {
 	/**
 	 * A dummy constructor to prevent loading more than one instance
 	 *
-	 * @since DoYouKnowPlugin (0.0.1)
+	 * @since DoYouKnowPlugin (1.0.0)
 	 */
 	private function __construct() { /* Do nothing here */
 	}
@@ -55,7 +55,7 @@ class DoYouKnowPlugin {
 	/**
 	 * Component global variables
 	 *
-	 * @since DoYouKnowPlugin (0.0.1)
+	 * @since DoYouKnowPlugin (1.0.0)
 	 * @access private
 	 *
 	 */
@@ -66,7 +66,7 @@ class DoYouKnowPlugin {
 	/**
 	 * Includes
 	 *
-	 * @since DoYouKnowPlugin (0.0.1)
+	 * @since DoYouKnowPlugin (1.0.0)
 	 * @access private
 	 */
 	private function includes() {
@@ -77,7 +77,7 @@ class DoYouKnowPlugin {
 	/**
 	 * Setup the filters
 	 *
-	 * @since DoYouKnowPlugin (0.0.1)
+	 * @since DoYouKnowPlugin (1.0.0)
 	 * @access private
 	 *
 	 * @uses remove_filter() To remove various filters
@@ -90,7 +90,7 @@ class DoYouKnowPlugin {
 	/**
 	 * Setup the actions
 	 *
-	 * @since DoYouKnowPlugin (0.0.1)
+	 * @since DoYouKnowPlugin (1.0.0)
 	 * @access private
 	 *
 	 * @uses remove_action() To remove various actions
