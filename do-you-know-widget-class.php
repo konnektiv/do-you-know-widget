@@ -43,10 +43,11 @@ class DoYouKnow_widget extends WP_Widget {
 		$action = 'dyk_game_' . $game_start;
 
 		// answer was submitted
-		if ( 'POST' === $_SERVER['REQUEST_METHOD'] and isset ( $_POST['_dyk_answer'] ) && is_null( $result ) ) {
-			if ( ! wp_verify_nonce( $_REQUEST['_wpnonce'], $action ) ) {
-				return new WP_Error( 'access-denied', "Cheat'n, uh?" );
-			}
+		if ( 'POST' === $_SERVER['REQUEST_METHOD'] &&
+			isset ( $_POST['_dyk_answer'] ) &&
+			is_null( $result ) &&
+			wp_verify_nonce( $_REQUEST['_wpnonce'], $action ) ) {
+
 			$result = ( $answers[ $_POST['_dyk_answer'] ] == $current_user ) ? '1' : '0';
 			add_user_meta( get_current_user_id(), '_dyk_current_result', $result, true );
 			$result = (bool) $result;
