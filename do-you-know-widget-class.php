@@ -142,9 +142,9 @@ class DoYouKnow_widget extends WP_Widget {
 		<?php } ?>
 
 		<?php if ( $error_msg ) { ?>
-			<?php echo $error_msg;
-
-			return; ?>
+			<?php echo $error_msg; ?>
+			<?php echo $after_widget; ?>
+			<?php return; ?>
 		<?php } ?>
 
 		<div class="do-you-know-content">
