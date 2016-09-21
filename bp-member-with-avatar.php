@@ -63,7 +63,7 @@ class BP_Members_With_Avatar_Helper {
 	 *
 	 * @return WP_User return a random user object which has an attached avatar
 	 */
-	public function get_random_user_with_avatar( $exclude = null ) {
+	public function get_random_user_with_avatar( $exclude = null,  $check_gravatars ) {
 
 		if ( $exclude ) {
 			$exclude = array( $exclude );
@@ -90,8 +90,12 @@ class BP_Members_With_Avatar_Helper {
 			array_splice( $users, $index, 1 );
 			$avatar = null;
 
+			$methods = array( true );
+			if ( $check_gravatars )
+				$methods[] = false;
+
 			// first try w/o gravatar
-			foreach ( array( true, false ) as $no_grav ) {
+			foreach ( $methods as $no_grav ) {
 				$avatar = $this->get_avatar_url( $user, $no_grav );
 
 				if ( $avatar && $no_grav ) {
@@ -101,6 +105,7 @@ class BP_Members_With_Avatar_Helper {
 
 				// check if gravatar exists
 				if ( ! $no_grav ) {
+					error_log("Checking for gravatar: $user->user_email");
 					if ( strpos( $avatar, 'http' ) !== 0 ) {
 						$avatar = ( is_ssl() ? 'https:' : 'http:' ) . $avatar;
 					}

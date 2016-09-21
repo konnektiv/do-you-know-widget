@@ -23,7 +23,7 @@ class DoYouKnow_widget extends WP_Widget {
 		return $triggers;
 	}
 
-	function get_game( $seconds, $num_choices ) {
+	function get_game( $seconds, $num_choices, $check_gravatars ) {
 
 		if ( ! is_user_logged_in() ) {
 			return new WP_Error( 'user-not-logged-in', 'You must be logged in to play the Do You Know game!' );
@@ -63,7 +63,7 @@ class DoYouKnow_widget extends WP_Widget {
 			$result       = null;
 
 			// set current user
-			$current_user = BP_Members_With_Avatar_Helper::get_instance()->get_random_user_with_avatar( get_current_user_id() );
+			$current_user = BP_Members_With_Avatar_Helper::get_instance()->get_random_user_with_avatar( get_current_user_id(), $check_gravatars );
 
 			if ( ! $current_user ) {
 				return new WP_Error( 'no-avatar', 'No other user with an avatar could be found! You need at least one user with an avatar apart from the currently logged in user.' );
@@ -124,7 +124,8 @@ class DoYouKnow_widget extends WP_Widget {
 		$num_choices = $instance['num_choices'];
 		$correct_msg = $instance['correct_msg'];
 		$wrong_msg   = $instance['wrong_msg'];
-		$game        = $this->get_game( $seconds, $num_choices );
+		$gravatar    = $instance['gravatar'];
+		$game        = $this->get_game( $seconds, $num_choices, $gravatar );
 		$error_msg   = false;
 		$has_result  = false;
 
@@ -203,6 +204,7 @@ class DoYouKnow_widget extends WP_Widget {
 		$instance['correct_msg'] = strip_tags( $new_instance['correct_msg'] );
 		$instance['wrong_msg']   = strip_tags( $new_instance['wrong_msg'] );
 		$instance['num_choices'] = strip_tags( $new_instance['num_choices'] );
+		$instance['gravatar'] 	 = strip_tags( $new_instance['gravatar'] );
 
 		return $instance;
 	}
@@ -225,6 +227,7 @@ class DoYouKnow_widget extends WP_Widget {
 		$correct_msg = esc_attr( $instance['correct_msg'] );
 		$wrong_msg   = esc_attr( $instance['wrong_msg'] );
 		$num_choices = esc_attr( $instance['num_choices'] );
+		$gravatar 	 = esc_attr( $instance['gravatar'] );
 
 		?>
 		<p>
@@ -263,6 +266,11 @@ class DoYouKnow_widget extends WP_Widget {
 			<input class="widefat" id="<?php echo $this->get_field_id( 'wrong_msg' ); ?>"
 			       name="<?php echo $this->get_field_name( 'wrong_msg' ); ?>" type="text"
 			       value="<?php echo $wrong_msg; ?>"/>
+		</p>
+		<p>
+			<label for="<?php echo $this->get_field_id( 'gravatar' ); ?>"><?php _e( 'Check for Gravatars:' ); ?></label>
+			<input class="widefat" id="<?php echo $this->get_field_id( 'gravatar' ); ?>"
+			       name="<?php echo $this->get_field_name( 'gravatar' ); ?>" type="checkbox" <?php checked($gravatar); ?> value="1"/>
 		</p>
 		<?php
 	}
