@@ -4,7 +4,7 @@ Contributors: konnektiv, chherbst, rrh
 Tags: time, widget, gamification, interaction, badgeos, community building, award, reward, engagement, community, buddypress, plugin
 Requires at least: WordPress 3.6.0
 Tested up to: 4.5.2
-Stable tag: 1.0.0
+Stable tag: 1.0.1
 License: GNU AGPLv3
 License URI: http://www.gnu.org/licenses/agpl-3.0.html
 
@@ -27,7 +27,19 @@ This plugin was originally developed for the [globe - Community of Digital Learn
 1. Upload 'do-you-know-widget' to the '/wp-content/plugins/' directory
 1. Activate the plugin through the 'Plugins' menu in WordPress
 
+== Frequently Asked Questions ==
+
+= What does the 'Check for Gravatars' option do? =
+
+Only users that have an avatar are displayed in the Do-you-know-widget, because only this makes them recognizable. With the 'Check for Gravatars' option checked, not only users with local avatars but also users with gravatars set on gravatar.com are considered for display in the widget.
+
+However, checking whether users have a gravatar set is time-consuming, so it is not recommended for installations with a user base of 1000+ users.
+
 == Changelog ==
+
+= 1.0.1 =
+* Fixed minor errors
+* Added option to disable gravatar lookup
 
 = 1.0.0 =
 * Initial release

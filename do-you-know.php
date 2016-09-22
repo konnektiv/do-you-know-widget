@@ -3,7 +3,7 @@
  * Plugin Name: Do You Know Widget
  * Plugin URI: https://wordpress.org/plugins/do-you-know-widget/
  * Description: Adds a widget with a user recognition game.
- * Version: 1.0.0
+ * Version: 1.0.1
  * Author: Konnektiv
  * Author URI: http://konnektiv.de/
  * License: GNU AGPL (licence.txt)
